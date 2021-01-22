@@ -1,0 +1,141 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Source Files\Actoren">
+      <UniqueIdentifier>{7dfb5bb0-1425-46c5-b337-eb0596092505}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Sensoren">
+      <UniqueIdentifier>{0bb8c1fb-3f83-479d-be10-3c345d4a985f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Misc">
+      <UniqueIdentifier>{5bb544b6-27b8-49ae-b909-9dd300e31c93}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Actoren">
+      <UniqueIdentifier>{f85b1327-a97d-474d-8d6a-ae1778f607c5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Sensoren">
+      <UniqueIdentifier>{496dd796-81ad-4043-b29c-cb758dfe729a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Misc">
+      <UniqueIdentifier>{bbc4817e-26c8-450f-a285-aedf4b37b2a2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Tests">
+      <UniqueIdentifier>{07323d0d-0158-43c8-b7ab-da715972dee2}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="JuliansAnhaengerLedControll.ino" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="actor.h">
+      <Filter>Header Files\Actoren</Filter>
+    </ClInclude>
+    <ClInclude Include="analogOut.h">
+      <Filter>Header Files\Actoren</Filter>
+    </ClInclude>
+    <ClInclude Include="digitalOut.h">
+      <Filter>Header Files\Actoren</Filter>
+    </ClInclude>
+    <ClInclude Include="analogIn.h">
+      <Filter>Header Files\Sensoren</Filter>
+    </ClInclude>
+    <ClInclude Include="directionEncoder.h">
+      <Filter>Header Files\Sensoren</Filter>
+    </ClInclude>
+    <ClInclude Include="sensor.h">
+      <Filter>Header Files\Sensoren</Filter>
+    </ClInclude>
+    <ClInclude Include="logger.h">
+      <Filter>Header Files\Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="doggle.h">
+      <Filter>Header Files\Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="Streaming.h">
+      <Filter>Header Files\Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="PinChangeInt.h">
+      <Filter>Header Files\Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="constants.h">
+      <Filter>Header Files\Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="__vm\.JuliansAnhaengerLedControll.vsarduino.h">
+      <Filter>Header Files\Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="digitalIn.h">
+      <Filter>Header Files\Sensoren</Filter>
+    </ClInclude>
+    <ClInclude Include="RGBLed.h">
+      <Filter>Header Files\Actoren</Filter>
+    </ClInclude>
+    <ClInclude Include="statesController.h">
+      <Filter>Header Files\Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="list.h">
+      <Filter>Header Files\Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="vector.h">
+      <Filter>Header Files\Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="SwitchController.h">
+      <Filter>Header Files\Sensoren</Filter>
+    </ClInclude>
+    <ClInclude Include="Test_SwitchController.h">
+      <Filter>Tests</Filter>
+    </ClInclude>
+    <ClInclude Include="MemoryInfo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="actor.cpp">
+      <Filter>Source Files\Actoren</Filter>
+    </ClCompile>
+    <ClCompile Include="digitalOut.cpp">
+      <Filter>Source Files\Actoren</Filter>
+    </ClCompile>
+    <ClCompile Include="analogOut.cpp">
+      <Filter>Source Files\Actoren</Filter>
+    </ClCompile>
+    <ClCompile Include="analogIn.cpp">
+      <Filter>Source Files\Sensoren</Filter>
+    </ClCompile>
+    <ClCompile Include="directionEncoder.cpp">
+      <Filter>Source Files\Sensoren</Filter>
+    </ClCompile>
+    <ClCompile Include="sensor.cpp">
+      <Filter>Source Files\Sensoren</Filter>
+    </ClCompile>
+    <ClCompile Include="doggle.cpp">
+      <Filter>Source Files\Misc</Filter>
+    </ClCompile>
+    <ClCompile Include="logger.cpp">
+      <Filter>Source Files\Misc</Filter>
+    </ClCompile>
+    <ClCompile Include="digitalIn.cpp">
+      <Filter>Source Files\Sensoren</Filter>
+    </ClCompile>
+    <ClCompile Include="RGBLed.cpp">
+      <Filter>Source Files\Actoren</Filter>
+    </ClCompile>
+    <ClCompile Include="SwitchController.cpp">
+      <Filter>Source Files\Sensoren</Filter>
+    </ClCompile>
+    <ClCompile Include="Test_SwitchController.cpp">
+      <Filter>Tests</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
