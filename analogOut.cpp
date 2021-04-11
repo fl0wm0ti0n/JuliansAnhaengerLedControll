@@ -6,10 +6,13 @@
 #include "analogOut.h"
 #include "logger.h"
 
-analogOut::analogOut(String n, int p)
+analogOut::analogOut(char n[], int p)
 	:actor(analogOut_act, n, p)
 {
-	logger_g_ = logger::GetInstance(DEFAULT_LOGLEVEL, DEFAULT_LOGTARGET, "Logging1");
+#ifdef DEBUG
+	static char* const buffer PROGMEM = "Logging1";
+	logger_g_ = logger::GetInstance(DEFAULT_LOGLEVEL, DEFAULT_LOGTARGET, buffer);
+#endif
 	actor::setValue(analogRead(p));
 }
 
@@ -18,7 +21,11 @@ analogOut::~analogOut()
 
 bool analogOut::setValue(int v)
 {
-	logger_g_->WriteLog("Call - analogOut - setValue", extremedebug);
+#ifdef DEBUG
+	static const char* const buffer PROGMEM = "Call - analogOut - setValue";
+	logger_g_->LnWriteLog(buffer, extremedebug);
+#endif
+
 
 	if (getValue() != v)
 	{
@@ -30,14 +37,17 @@ bool analogOut::setValue(int v)
 
 bool analogOut::doggle()
 {
-	logger_g_->WriteLog("Call - analogOut - doggle", extremedebug);
+	static const char* const buffer PROGMEM = "Call - analogOut - doggle";
+	logger_g_->LnWriteLog(buffer, extremedebug);
 	return setValue(!getValue());
 }
 
 void analogOut::SlowlyIncreaseOrDecreaseValue(bool sensorResult, int maxValue)
 {
-	logger_g_->WriteLog("Call - LEDSlowlyInDecreaseValue", extremedebug);
-
+#ifdef DEBUG
+	static const char* const buffer PROGMEM = "Call - LEDSlowlyInDecreaseValue";
+	logger_g_->WriteLog(buffer, extremedebug);
+#endif
 	if (sensorResult)
 	{
 		if (lightcounter_ != maxValue)
@@ -45,7 +55,12 @@ void analogOut::SlowlyIncreaseOrDecreaseValue(bool sensorResult, int maxValue)
 			if (lightcounter_ < maxValue)
 			{
 				lightcounter_++;
-				logger_g_->WriteLog("Value Up - " + String(lightcounter_), extremedebug);
+#ifdef DEBUG
+				static const char* const buffer PROGMEM = "Value Up - ";
+				logger_g_->LnWriteLog(buffer, extremedebug);
+				logger_g_->WriteLog(lightcounter_, extremedebug);
+#endif
+
 			}
 		}
 	}
@@ -56,7 +71,11 @@ void analogOut::SlowlyIncreaseOrDecreaseValue(bool sensorResult, int maxValue)
 			if (lightcounter_ > 0)
 			{
 				lightcounter_--;
-				logger_g_->WriteLog("Value Down - " + String(lightcounter_), extremedebug);
+#ifdef DEBUG
+				static const char* const buffer PROGMEM = "Value Down - ";
+				logger_g_->LnWriteLog(buffer, extremedebug);
+				logger_g_->WriteLog(lightcounter_, extremedebug);
+#endif
 			}
 		}
 	}

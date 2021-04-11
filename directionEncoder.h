@@ -33,7 +33,7 @@ private:
 	logger* logger_g_;
 
 public:
-	directionEncoder(String n, int pSW, int pCLK, int pDT);
+	directionEncoder(char n[], int pSW, int pCLK, int pDT);
 	~directionEncoder();
 	int getEncoderValue();		// Method: get encoder Value
 	bool getValue();				// Method: get switch Value

@@ -15,7 +15,7 @@ class digitalOut:public actor
 	logger* logger_g_;
 	
 public:
-	 digitalOut(String n, int p);
+	 digitalOut(char n[], int p);
 	 virtual ~digitalOut();
 
 	 virtual bool setValue(int v);

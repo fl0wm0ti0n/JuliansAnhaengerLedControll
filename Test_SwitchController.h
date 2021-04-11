@@ -20,31 +20,32 @@ public:
 
 private:
 	void Setup();
-	bool Validate(bool vali, String name_of_trigger);
-	bool ValidateNegative(bool vali, String name_of_trigger);
+	bool Validate(bool vali, const char name_of_trigger[]);
+	bool ValidateNegative(bool vali, const char name_of_trigger[]);
 	bool ValidateTimeout(bool vali);
-	bool DoIfTimeForButtonRelease(byte idx, short tolerance, unsigned long zeitstempel, bool result);
-	bool DoIfTimeForButtonPress(byte idx, short tolerance, unsigned long zeitstempel, bool result);
+	bool DoIfTimeForButtonRelease(unsigned short idx, short additive, unsigned long zeitstempel, bool result);
+	bool DoIfTimeForButtonPress(unsigned short idx, short additive, unsigned long zeitstempel, bool result);
 
 	bool Simulate_FirstClick();
-	bool Simulate_1Click(unsigned long startzeit);
-	bool Simulate_2Clicks(unsigned long startzeit);
-	bool Simulate_2ClicksForRow(unsigned long startzeit);
-	bool Simulate_Timeout(unsigned long startzeit);
+	bool Simulate_SelectedNumberOfClicks(unsigned int eventtype, unsigned int clickcount, unsigned long startzeit);
+	//bool Simulate_Timeout(unsigned long startzeit);
 	bool Simulate_WrongInput1(unsigned long startzeit);
 	bool Simulate_WrongInput2(unsigned long startzeit);
-	bool Simulate_TimeBetweenTrigger(unsigned long startzeit);
+	//bool Simulate_TimeBetweenTrigger(unsigned long startzeit);
 	bool Simulate_LastClick(unsigned long startzeit);
 
 	void Zwischenzeit(unsigned long zeitstempel);
 	void Zeitstempel(unsigned long zeitstempel);
 	
 	const unsigned long testtime_ = _SWITCHTESTPERIOD; // milliseconds
-		
-	String trigger1_;
-	String trigger2_;
-	String trigger3_;
-	String trigger4_;
+	
+	const char* const trigger_1 PROGMEM = "PowerOn";
+	const char* const trigger_2 PROGMEM = "1Click";
+	const char* const trigger_3 PROGMEM = "2Clicks";
+	const char* const trigger_4 PROGMEM = "PowerOff";
+
+	// Initialisiere die Tabelle von chars
+	const char* const trigger_array_[4] PROGMEM = { trigger_1, trigger_2, trigger_3, trigger_4 };
 
 	logger* logger_g_;
 	SwitchController new_switch_controller;

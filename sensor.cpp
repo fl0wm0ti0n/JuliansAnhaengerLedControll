@@ -7,10 +7,10 @@
 #include "sensor.h"
 #include "constants.h"
 
-sensor::sensor(t_sensor_type t, String n, int p)
+sensor::sensor(t_sensor_type t, char n[], int p)
 	:m_iType(t), m_cName(n), m_iValue(0), m_iPin(p)
 {
-	pinMode(m_iPin, INPUT);
+	sensor::setPin(m_iPin);
 }
 
 sensor::~sensor()

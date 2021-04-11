@@ -5,10 +5,14 @@
 
 #include "analogIn.h"
 
-analogIn::analogIn(String n, int p)
+analogIn::analogIn(char n[], int p)
 	:sensor(analogIn_sens, n, p)
 {
-	logger_g_ = logger::GetInstance(DEFAULT_LOGLEVEL, DEFAULT_LOGTARGET, "Logging1");
+#ifdef DEBUG
+	static char* const buffer PROGMEM = "Logging1";
+	logger_g_ = logger::GetInstance(DEFAULT_LOGLEVEL, DEFAULT_LOGTARGET, buffer);
+#endif
+
 	sensor::getValue(analogRead(p));
 	setPin(p);
 }
@@ -18,7 +22,11 @@ analogIn::~analogIn()
 
 int analogIn::getValue()
 {
-	logger_g_->WriteLog(F("Call - analogIn.getValue"), extremedebug);
+#ifdef DEBUG
+	static const char* const buffer PROGMEM = "Call - analogIn.getValue";
+	logger_g_->WriteLog(buffer, extremedebug);
+#endif
+
 	iAnalogValue = analogRead(iPinNum);
 	return iAnalogValue;
 }

@@ -1,9 +1,12 @@
 #include "digitalIn.h"
 
-digitalIn::digitalIn(String n, int p)
+digitalIn::digitalIn(char n[], int p)
 	:sensor(digitalIn_sens, n, p)
 {
-	logger_g_ = logger::GetInstance(DEFAULT_LOGLEVEL, DEFAULT_LOGTARGET, "Logging1");
+#ifdef DEBUG
+	static char* const buffer PROGMEM = "Logging1";
+	logger_g_ = logger::GetInstance(DEFAULT_LOGLEVEL, DEFAULT_LOGTARGET, buffer);
+#endif
 	sensor::getValue(digitalRead(p));
 	setPin(p);
 }
@@ -13,15 +16,26 @@ digitalIn::~digitalIn()
 
 bool digitalIn::getValue()
 {
-	logger_g_->WriteLog(F("Call - digitalIn.getValue"), extremedebug);
+#ifdef DEBUG
+	static const char* const buffer PROGMEM = "Call - digitalIn.getValue";
+	logger_g_->LnWriteLog(buffer, extremedebug);
+#endif
+
 	if (digitalRead(getPin()) == HIGH)
 	{
-		logger_g_->WriteLog("Switch: is true", sensordata);
+		Serial.println(F("Switch: is true"));
+#ifdef DEBUG
+		static const char* const buffer PROGMEM = "Switch: is true";
+		logger_g_->LnWriteLog(buffer, sensordata);
+#endif
 		bSwitchState_ = true;
 	}
 	else
 	{
-		logger_g_->WriteLog("Switch: is false", sensordata);
+#ifdef DEBUG
+		static const char* const buffer PROGMEM = "Switch: is false";
+		logger_g_->LnWriteLog(buffer, sensordata);
+#endif
 		bSwitchState_ = false;
 	}
 	return bSwitchState_;

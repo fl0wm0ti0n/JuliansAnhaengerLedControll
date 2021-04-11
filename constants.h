@@ -7,16 +7,17 @@
 #define _CONSTANTS_h
 
 // Run Test Yes/No
-#define _TEST	1
+//#define _TEST	1
 #define _SWITCHTESTPERIOD	120000
 
 // Debug Yes/No
-//#define _DEBUG
+//#define DEBUG 0
 
 // Meminfo Yes/No
 //#define MEMINFO_
+#define  FCHAR(x) 	char buffer[] PROGMEM
 
-#ifdef _DEBUG
+#ifdef DEBUG
 #define DEBUG_PRINT(x)     Serial.print (x)
 #define DEBUG_PRINTLN(x)  Serial.println (x)
 #else

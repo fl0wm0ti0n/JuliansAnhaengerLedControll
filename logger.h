@@ -13,8 +13,18 @@
 #endif
 
 #include "constants.h"
+#include "Streaming.h"
 
-enum t_log_level
+#ifdef __arm__
+// should use uinstd.h to define sbrk but Due causes a conflict
+extern "C" char* sbrk(int incr);
+#else  // __ARM__
+extern char* __brkval;
+extern unsigned int __bss_end;
+extern unsigned int __heap_start;
+#endif  // __arm__
+
+enum log_level
 {
 	disabled = -1,
 	error = 0,
@@ -24,7 +34,7 @@ enum t_log_level
 	extremedebug = 4,
 };
 
-enum t_log_target
+enum log_target
 {
 	serial = 0,
 	net = 1,
@@ -37,41 +47,50 @@ class logger
 	
 private:
 	// Variablen des Constructors
-	t_log_level		i_log_lvl_;
-	t_log_target	i_log_target_;
-	String			c_name_;
+	log_level		log_lvl_;
+	log_target		log_target_;
+	char			name_;
 
 	// Variablen zur Zeitberechnung
-	String			c_timestamp_;
-	String			c_sekunde_;
-	String			c_minute_;
-	String			c_stunde_;
-	int				i_sekunde_ = 0;
-	int				i_minute_ = 0;
-	int				i_stunde_ = 0;
+	char			timestamp_char_[17];
+	char			sekunde_char_[3];
+	char			minute_char_[3];
+	char			stunde_char_[3];
+	//char			buffer[sizeof(int) * 8 + 1];
+	int				sekunde_ = 0;
+	byte			minute_ = 0;
+	byte			stunde_ = 0;
 
 	// Variablen zur Loghochzähulung
-	unsigned int	i_num_errors;
-	unsigned int	i_num_warnings_;
-	unsigned int    i_num_sensors_;
-	unsigned int    i_num_debugs_;
-	unsigned int    i_num_extremedebugs_;
+	unsigned int	num_errors;
+	unsigned int	num_warnings_;
+	unsigned int    num_sensors_;
+	unsigned int    num_debugs_;
+	unsigned int    num_extremedebugs_;
 
 	// Weitere Variablen
-	String			c_enum_lvl_[5];
-	String			c_log_archive_;
-	String			c_log_message_;
+	char			log_archive_;
+	char			log_message_;
+	
+	const char* const warni PROGMEM = "warni";
+	const char* const senso PROGMEM = "senso";
+	const char* const error PROGMEM = "error";
+	const char* const debug PROGMEM = "debug";
+	const char* const exdeb PROGMEM = "exdeb";
 
-	void HandleLog(String time, String text, t_log_level llevel, bool newline);
+	// Initialisiere die Tabelle von Strings
+	const char* const loglevel_table[5] PROGMEM = { error, warni, senso, debug, exdeb };
 
+	void HandleLog(char time[], char text[], log_level llevel, bool newline);
+	
 	/**
 	 * The Singleton's constructor should always be private to prevent direct
 	 * construction calls with the `new` operator.
 	 */
 protected:
-	logger(t_log_level t, t_log_target g, String n) : i_log_lvl_(t), i_log_target_(g), c_name_(n)
+	logger(log_level t, log_target g, char n[]) : log_lvl_(t), log_target_(g), name_(*n)
 	{
-		switch (i_log_target_)
+		switch (log_target_)
 		{
 		case 0:
 			Serial.begin(DEFAULT_BAUTRATE);
@@ -84,14 +103,7 @@ protected:
 			break;
 		default:
 			break;
-		}
-
-		// inizialisiere Array für Loglevel Ausgabe
-		c_enum_lvl_[0] = F("error");
-		c_enum_lvl_[1] = F("warni");
-		c_enum_lvl_[2] = F("senso");
-		c_enum_lvl_[3] = F("debug");
-		c_enum_lvl_[4] = F("exdeb");
+		}	
 	}
 
 	static logger* singleton_;
@@ -113,105 +125,180 @@ public:
 	 * into the static field. On subsequent runs, it returns the client existing
 	 * object stored in the static field.
 	 */
-	static logger* GetInstance(t_log_level t, t_log_target g, String n);
+	static logger* GetInstance(log_level t, log_target g, char n[]);
 	static logger* GetInstance();
 
-	void LnWriteLog(String text, t_log_level llevel);
-	void WriteLogLn(String text, t_log_level llevel);
-	void WriteLog(String text, t_log_level llevel);
-	String GetActualTimestamp();
-	String GetLogArchive(t_log_level llevel);
+	template <typename T>
+	void LnWriteLog(T value, log_level llevel);
+	template <typename T>
+	void WriteLogLn(T value, log_level llevel);
+	template <typename T>
+	void WriteLog(T value, log_level llevel);
 
-	void SetLoglevel(t_log_level m_iLogLvl_)
+	template<typename T>
+	void FinalHandleLog(char time[], T text, log_level llevel, bool newline);
+	
+	char* convert_bool_to_char(bool value);
+	char* GetActualTimestamp();
+	char* GetLogArchive(log_level llevel);
+	int free_memory();
+
+	void SetLoglevel(log_level m_iLogLvl_)
 	{
-		this->i_log_lvl_ = m_iLogLvl_;
+		this->log_lvl_ = m_iLogLvl_;
 	}
 
-	void SetLogTarget(t_log_target m_iLogTarget_)
+	void SetLogTarget(log_target m_iLogTarget_)
 	{
-		this->i_log_target_ = m_iLogTarget_;
+		this->log_target_ = m_iLogTarget_;
 	}
 
-	t_log_level GetLogLevel()
+	log_level GetLogLevel() 
 	{
-		return i_log_lvl_;
+		return log_lvl_;
 	}
 
-	t_log_target GetLogTarget()
+	log_target GetLogTarget()
 	{
-		return i_log_target_;
+		return log_target_;
 	}
 
-	String GetName()
+	char GetName()
 	{
-		return c_name_;
+		return name_;
 	}
 };
 
-//class logger
-//{
-//
-//private:
-//
-//	// Variablen des Constructors
-//	t_log_level		i_log_lvl_;
-//	t_log_target	i_log_target_;
-//	String			c_name_;
-//
-//	// Variablen zur Zeitberechnung
-//	String			c_timestamp_;
-//	String			c_sekunde_;
-//	String			c_minute_;
-//	String			c_stunde_;
-//	int				i_sekunde_ = 0;
-//	int				i_minute_ = 0;
-//	int				i_stunde_ = 0;
-//
-//	// Variablen zur Loghochzähulung
-//	unsigned int	i_num_errors;
-//	unsigned int	i_num_warnings_;
-//	unsigned int    i_num_sensors_;
-//	unsigned int    i_num_debugs_;
-//	unsigned int    i_num_extremedebugs_;
-//
-//	// Weitere Variablen
-//	String			c_enum_lvl_[5];
-//	String			c_log_archive_;
-//	String			c_log_message_;
-//
-//	void handleLog(String time, String text, t_log_level llevel);
-//
-//public:
-//	logger(t_log_level t, t_log_target g, String n);		// Constructor
-//	virtual ~logger();									// Destructor
-//
-//	void WriteLog(String text, t_log_level llevel);
-//	String GetActualTimestamp();
-//	String GetLogArchive(t_log_level llevel);
-//
-//	void SetLoglevel(t_log_level i_log_lvl_)
-//	{
-//		this->i_log_lvl_ = i_log_lvl_;
-//	}
-//
-//	void SetLogTarget(t_log_target i_log_target_)
-//	{
-//		this->i_log_target_ = i_log_target_;
-//	}
-//
-//	t_log_level GetLogLevel()
-//	{
-//		return i_log_lvl_;
-//	}
-//
-//	t_log_target GetLogTarget()
-//	{
-//		return i_log_target_;
-//	}
-//
-//	String GetName()
-//	{
-//		return c_name_;
-//	}
-//};
+template<typename T>
+void CovertToChar(char*& to, T from) { strcpy(to, from);}
+
+template<>
+inline void CovertToChar<bool>(char*& to, bool from) { if (from) { strcpy(to, "true"); } else { strcpy(to, "false"); } }
+
+template<>
+inline void CovertToChar<int>(char*& to, int from) { itoa(from, to, 10); }
+
+template<>
+inline void CovertToChar<unsigned int>(char*& to, unsigned int from) { ultoa(from, to, 10); }
+
+template<>
+inline void CovertToChar<short>(char*& to, short from) { itoa(from, to, 10); }
+
+template<>
+inline void CovertToChar<unsigned short>(char*& to, unsigned short from) { ultoa(from, to, 10); }
+
+template<>
+inline void CovertToChar<long>(char*& to, long from) { ltoa(from, to, 10); }
+
+template<>
+inline void CovertToChar<unsigned long>(char*& to, unsigned long from) { ultoa(from, to, 10); }
+
+template<>
+inline void CovertToChar<float>(char*& to, float from) { snprintf(to, sizeof to, "%f", from); }
+
+template<>
+inline void CovertToChar<double>(char*& to, double from) { snprintf(to, sizeof to, "%f", from); }
+
+template<>
+inline void CovertToChar<char*>(char*& to, char from[]) { strcpy(to, from); }
+
+
+template <typename T>
+void logger::LnWriteLog(T value, log_level llevel)
+{
+//#ifdef MEMINFO_
+//	Serial << endl << "Free Memory: " << free_memory() << endl;
+//#endif
+	if (GetLogLevel() != disabled)
+	{
+		//char* creturn = GetTypeofAndCovertToChar(value);
+		//char buffering[sizeof(creturn) + 2];
+		//strcpy(buffering, creturn);
+		//memset(creturn, '\0', 1);
+		//delete[] creturn;
+		FinalHandleLog(GetActualTimestamp(), value, llevel, false);
+		//delete[] creturn;
+	}
+}
+
+template <typename T>
+void logger::WriteLogLn(T value, log_level llevel)
+{
+//#ifdef MEMINFO_
+//	Serial << endl << "Free Memory: " << free_memory() << endl;
+//#endif
+	if (GetLogLevel() != disabled)
+	{
+		//char* creturn = GetTypeofAndCovertToChar(value);
+		//char buffering[sizeof(creturn) + 2];
+		//strcpy(buffering, creturn);
+		//memset(creturn, '\0', 1);
+		//delete[] creturn;
+		FinalHandleLog(NULL, value, llevel, true);
+		//delete[] creturn;
+	}
+}
+
+template <typename T>
+void logger::WriteLog(T value, log_level llevel)
+{
+//#ifdef MEMINFO_
+//	Serial << endl << "Free Memory: " << free_memory() << endl;
+//#endif
+	if (GetLogLevel() != disabled)
+	{
+		FinalHandleLog(NULL, value, llevel, false);
+	}
+}
+
+template <typename T>
+void logger::FinalHandleLog(char time[], T text, log_level llevel, bool newline)
+{
+	char* convertedc = new char[sizeof(T) * 8 + 1];
+	CovertToChar(convertedc, text);
+	if (log_lvl_ >= llevel)
+	{
+		switch (log_target_)
+		{
+		case 0:
+			if (newline)
+			{
+				Serial << convertedc << endl;
+				delete[] convertedc;
+				break;
+			}
+			if (time != NULL)
+			{
+				Serial << endl << time << " : " << loglevel_table[llevel] << " : " << convertedc;
+				delete[] convertedc;
+				break;
+			}
+			Serial << convertedc;
+			delete[] convertedc;
+			break;
+		case 1:
+			// Netzwerk Stream - noch nicht implementiert!
+			break;
+		case 2:
+			// Archivdata - noch nicht implementiert!
+			break;
+		default:
+			if (newline)
+			{
+				Serial << convertedc << endl;
+				delete[] convertedc;
+				break;
+			}
+			if (time != NULL)
+			{
+				Serial << endl << time << " : " << loglevel_table[llevel] << " : " << convertedc;
+				delete[] convertedc;
+				break;
+			}
+			Serial << convertedc;
+			delete[] convertedc;
+			break;
+		}
+	}
+}
 #endif

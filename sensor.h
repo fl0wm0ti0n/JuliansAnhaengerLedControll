@@ -29,24 +29,24 @@ class sensor
 
 private:
 	t_sensor_type m_iType;
-	String m_cName;
+	char* m_cName;
 	int m_iValue;
 	int m_iPin;
 
 public:
-	sensor(t_sensor_type t, String n, int p);
+	sensor(t_sensor_type t, char n[], int p);
 	virtual ~sensor();
 
 	virtual t_sensor_type getType()
 	{return m_iType;}
 
-	virtual String getName()
+	virtual char* getName()
 	{return m_cName;}
 
 	virtual bool setPin(int p)
 	{
 		m_iPin = p;
-		pinMode(m_iPin, INPUT);
+		pinMode(m_iPin, INPUT_PULLUP);
 		return true;
 	}
 
@@ -59,4 +59,5 @@ public:
 		return true;
 	}
 };
+
 #endif

@@ -34,7 +34,7 @@ class analogOut :public actor
 	logger* logger_g_;
 
 public:
-	analogOut(String n, int p);
+	analogOut(char n[], int p);
 	virtual ~analogOut();
 	virtual bool setValue(int v);
 	bool doggle();

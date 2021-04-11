@@ -10,7 +10,6 @@
 #endif
 
 #include "sensor.h"
-#include "logger.h"
 
 class analogIn final : public sensor
 {
@@ -20,7 +19,7 @@ class analogIn final : public sensor
 		logger* logger_g_;
 
 	public:
-		analogIn(String n, int p);			// Constructor
+		analogIn(char n[], int p);			// Constructor
 		~analogIn();						// Destructor
 
 		int getValue();						// Method: get Value

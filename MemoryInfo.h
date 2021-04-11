@@ -35,33 +35,39 @@ static void ram_detail()
 {
 	logger* logger_g_ = logger::GetInstance();
 
-	logger_g_->LnWriteLog(F("Call - ram_detail"), extremedebug);
-	logger_g_->LnWriteLog(F("SRAM area borders ================="), debug);
-	logger_g_->LnWriteLog(F(".bss end     = "), debug);
-	logger_g_->WriteLog(String((int)&__bss_end), debug);
-	logger_g_->LnWriteLog(F("Heap start   = "), debug);
-	logger_g_->WriteLog(String((int)&__heap_start), debug);
-	logger_g_->LnWriteLog(F("__brkval     = "), debug);
-	logger_g_->WriteLog(String((int)__brkval), debug);
-	logger_g_->LnWriteLog(F("Stack pointer= "), debug);
-	logger_g_->WriteLog(String((int)SP), debug);
-	logger_g_->LnWriteLog(F("Free memory  = "), debug);
+	static const char* const buffer1 PROGMEM = "------- RAM area borders --------";
+	logger_g_->LnWriteLog(buffer1, debug);
+	static const char* const buffer2 PROGMEM = ".bss end     = ";
+	logger_g_->LnWriteLog(buffer2, debug);
+	logger_g_->WriteLog((int)&__bss_end, debug);
+	static const char* const buffer3 PROGMEM = "Heap start   = ";
+	logger_g_->LnWriteLog(buffer3, debug);
+	logger_g_->WriteLog((int)&__heap_start, debug);
+	static const char* const buffer4 PROGMEM = "__brkval     = ";
+	logger_g_->LnWriteLog(buffer4, debug);
+	logger_g_->WriteLog((int)__brkval, debug);
+	static const char* const buffer5 PROGMEM = "Stack pointer= ";
+	logger_g_->LnWriteLog(buffer5, debug);
+	logger_g_->WriteLog((int)SP, debug);
+	static const char* const buffer6 PROGMEM = "Free memory  = ";
+	logger_g_->LnWriteLog(buffer6, debug);
 	if (__brkval == 0x00)
 	{
-		logger_g_->WriteLog(String(SP - (int)&__bss_end), debug);
+		logger_g_->WriteLog(SP - (int)&__bss_end, debug);
 	}
 	else
 	{
-		logger_g_->WriteLog(String(SP - (int)__brkval), debug);
+		logger_g_->WriteLog(SP - (int)__brkval, debug);
 	}
 }
 
 static void free_mem()
 {
 	logger* logger_g_ = logger::GetInstance();
-	
-	logger_g_->WriteLog(F(", Freemem: "), debug);
-	logger_g_->WriteLog(String(free_memory()), debug);
+
+	static const char* const buffer6 PROGMEM = "Freemem: ";
+	logger_g_->LnWriteLog(buffer6, debug);
+	logger_g_->WriteLog(free_memory(), debug);
 }
 
 #endif

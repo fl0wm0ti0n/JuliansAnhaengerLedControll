@@ -14,13 +14,11 @@
 class digitalIn final :public sensor
 {
 private:
-	bool	bDigitalValue;
-	int		iPinNum;
 	bool	bSwitchState_ = false;
 	logger* logger_g_;
 	
 public:
-	digitalIn(String n, int p);
+	digitalIn(char n[], int p);
 	~digitalIn();
 
 	bool getValue();	// Method: get Value

@@ -14,46 +14,55 @@ class RGBLed : actor
 {
 
 public:
-	RGBLed(int red, int green, int blue, bool common, String name);
-
+	RGBLed(short red, short green, short blue, bool common, char name[]);
+	~RGBLed();
+	void on(short red, short green, short blue, short brightness);
 	void off();
+	void nextcolor();
+	void nextbrightness();
 
-	void brightness(int rgb[3], int brightness);
-	void brightness(int red, int green, int blue, int brightness);
+	void brightness(short rgb[3], short brightness);
+	void brightness(short red, short green, short blue, short brightness);
 
-	void flash(int rgb[3], int duration);
-	void flash(int rgb[3], int onDuration, int duration);
+	void flash(short rgb[3], short duration);
+	void flash(short rgb[3], short onDuration, short duration);
 
-	void flash(int red, int green, int blue, int duration);
-	void flash(int red, int green, int blue, int onDuration, int duration);
+	void flash(short red, short green, short blue, short duration);
+	void flash(short red, short green, short blue, short onDuration, short duration);
 
-	void setColor(int rgb[3]);
-	void setColor(int red, int green, int blue);
+	void setColor(short rgb[3]);
+	void setColor(short red, short green, short blue);
 
-	void fadeOut(int rgb[3], int steps, int duration);
-	void fadeOut(int red, int green, int blue, int steps, int duration);
+	void fadeOut(short rgb[3], short steps, short duration);
+	void fadeOut(short red, short green, short blue, short steps, short duration);
 
-	void fadeIn(int rgb[3], int steps, int duration);
-	void fadeIn(int red, int green, int blue, int steps, int duration);
+	void fadeIn(short rgb[3], short steps, short duration);
+	void fadeIn(short red, short green, short blue, short steps, short duration);
 
-	static int RED[3];
-	static int GREEN[3];
-	static int BLUE[3];
-	static int MAGENTA[3];
-	static int CYAN[3];
-	static int YELLOW[3];
-	static int WHITE[3];
+	static unsigned short RED[3];
+	static unsigned short GREEN[3];
+	static unsigned short BLUE[3];
+	static unsigned short MAGENTA[3];
+	static unsigned short CYAN[3];
+	static unsigned short YELLOW[3];
+	static unsigned short WHITE[3];
 
 	static bool COMMON_ANODE;
 	static bool COMMON_CATHODE;
 
-private:
-	int _red, _green, _blue, _common;
-	void color(int red, int green, int blue);
-	void blink(int red, int green, int blue, int onDuration, int duration);
-	void intensity(int red, int green, int blue, int brightness);
-	void fade(int red, int green, int blue, int steps, int duration, bool out);
-	void fade(int red, int green, int blue, int steps, int duration, int value);
 
+private:
+	short common_, red_, green_, blue_, brightness_;
+	void color(short red, short green, short blue);
+	void blink(short red, short green, short blue, short onDuration, short duration);
+	void intensity(short red, short green, short blue, short brightness);
+	void fade(short red, short green, short blue, short steps, short duration, bool out);
+	void fade(short red, short green, short blue, short steps, short duration, short value);
+
+	unsigned short colorwheel_colors_[7][3];
+	unsigned short colorwheel_position_ = 0;
+	const unsigned short colorwheel_max_ = 7;
+	unsigned short brightnesswheel_position_ = 0;
+	const unsigned short brightnesswheel_max_ = 255;
 };
 #endif
