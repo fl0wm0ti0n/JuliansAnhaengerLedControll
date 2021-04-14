@@ -83,9 +83,9 @@
 #define DEFAULT_THRESHOLD		0.5
 #define DEFAULT_MAXVALUE		255
 #define DEFAULT_MINVALUE		0
-#define DEFAULT_ALLLEDS			-1
+#define DEFAULT_ALLLEDS			(-1)
 #define DEFAULT_BAUTRATE		9600
-
+#define DEFAULT_DEBOUNCE		5
 
 // Definitionen der einzelnen Schaltzeiten
 #define		laufzeit_1		1UL

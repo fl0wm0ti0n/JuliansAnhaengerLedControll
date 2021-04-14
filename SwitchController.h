@@ -46,7 +46,7 @@ private:
 	unsigned long			release_time_			= 0;
 	bool					first_click_			= false;
 	unsigned long			press_time_				= 0;
-
+	bool					flipflop_				= false;
 
 	void reset_if_no_input_over_long_time(unsigned long freetime);
 	bool Event_handler_press(unsigned long timestamp);
@@ -77,8 +77,8 @@ struct EventTrigger
 	bool			prop_is_shutoff_click;						// event if false or true
 
 	// Validate
-	bool			vali_is_triggered_				= false;	// result = true if triggered
-	bool			vali_is_failed_					= false;	// result = true if triggered
+	bool			vali_is_triggered_				= false;	// result1 = true if triggered
+	bool			vali_is_failed_					= false;	// result1 = true if triggered
 	unsigned long	vali_triggered_time				= 0;
 	unsigned short	validated_clicks_				= 0;		// Times
 	unsigned short	validated_hold_					= 0;		// Times

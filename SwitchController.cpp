@@ -100,6 +100,8 @@ bool SwitchController::Event_handler_release(unsigned long timestamp)
 	// check all events if event trigger got triggered
 	for (int idx = 0; idx < events.size(); ++idx)
 	{
+		Serial.println(holdtime);
+		Serial.println(idx);
 		if (!Check_if_valid_hold(holdtime, idx)) continue;
 #ifdef DEBUG
 		static const char* const buffer0 PROGMEM = "Event: ";
@@ -138,9 +140,17 @@ bool SwitchController::Event_handler(bool up_down, unsigned long timestamp)
 #ifdef MEMINFO_
 	free_mem();
 #endif
-	if (up_down) return Event_handler_press(timestamp);
-	return Event_handler_release(timestamp);
 
+	if (!flipflop_)
+	{
+		if (up_down) flipflop_ = true; return Event_handler_press(timestamp);
+		return false;
+	}
+	if (flipflop_)
+	{
+		if (!up_down) flipflop_ = false; return Event_handler_release(timestamp);
+		return false;
+	}
 }
 
 // check timeout, if out of range -> reset vali & events
@@ -202,8 +212,10 @@ bool SwitchController::Check_if_valid_hold(unsigned long holdtime, int idx)
 #endif
 	if (holdtime >= events[idx].prop_continuous_hold - events[idx].prop_tolerance && holdtime <= events[idx].prop_continuous_hold + events[idx].prop_tolerance)
 	{
+		Serial.println(F("valid hold"));
 #ifdef DEBUG
 		static const char* const buffer2 PROGMEM = "[is valid hold]";
+
 		logger_g_->LnWriteLog(buffer2, debug);
 #endif
 		events[idx].validated_hold_++;
@@ -228,6 +240,7 @@ bool SwitchController::Check_if_firstclick(int idx)
 #endif
 	if (first_click_ && events[idx].validated_hold_ > 0 && events[idx].prop_is_first_click && !is_on)
 	{
+		Serial.println(F("first"));
 #ifdef DEBUG
 		static const char* const buffer1 PROGMEM = "[is first click]";
 		logger_g_->LnWriteLog(buffer1, debug);
@@ -386,6 +399,7 @@ bool SwitchController::set_on()
 				is_on = true;
 
 				strcpy(last_triggerede_event, events[idx].prop_event_title);
+				Serial.println(F("set_on"));
 				
 				reset_events();
 				reset_common_validating();
@@ -421,6 +435,7 @@ bool SwitchController::set_off()
 				is_on = false;
 
 				strcpy(last_triggerede_event, events[idx].prop_event_title);
+				Serial.println(F("set_off"));
 				
 				reset_events();
 				reset_common_validating();
@@ -454,7 +469,8 @@ bool SwitchController::run_event_and_reset()
 #endif
 
 			strcpy(last_triggerede_event, events[idx].prop_event_title);
-
+			Serial.println(F("run_event"));
+			
 			reset_events();
 			reset_common_validating();
 			return true;

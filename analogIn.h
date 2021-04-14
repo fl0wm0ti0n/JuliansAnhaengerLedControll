@@ -14,15 +14,15 @@
 class analogIn final : public sensor
 {
 	private:
-		int iAnalogValue;
-		int	iPinNum;
+		unsigned short iAnalogValue;
+		unsigned short	iPinNum;
 		logger* logger_g_;
 
 	public:
-		analogIn(char n[], int p);			// Constructor
+		analogIn(char n[], unsigned short p);			// Constructor
 		~analogIn();						// Destructor
 
-		int getValue();						// Method: get Value
+		unsigned short getAnalogValue();						// Method: get Value
 };
 
 #endif

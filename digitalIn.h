@@ -10,19 +10,27 @@
 
 #include "logger.h"
 #include "sensor.h"
+#include <Bounce2.h>
 
 class digitalIn final :public sensor
 {
 private:
 	bool	bSwitchState_ = false;
 	logger* logger_g_;
+	Bounce input_;
 	
 public:
-	digitalIn(char n[], int p);
+	digitalIn(char n[], unsigned short p);
 	~digitalIn();
-
-	bool getValue();	// Method: get Value
+	bool getFell();
+	bool getRose();
+	bool getChanged();
+	virtual bool getValue();
+	virtual bool setPin(unsigned short p);
+	void update_debounce();
+	void set_debounce_interval(unsigned short interval);
 };
+
 
 #endif
 

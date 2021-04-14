@@ -28,35 +28,38 @@ class sensor
 {
 
 private:
-	t_sensor_type m_iType;
-	char* m_cName;
-	int m_iValue;
-	int m_iPin;
+	t_sensor_type sensortype_;
+	char* sensorname_;
+	unsigned short sensorvalue_;
+	unsigned short sensorpin_;
 
 public:
-	sensor(t_sensor_type t, char n[], int p);
+	sensor(t_sensor_type t, char n[], unsigned short p);
 	virtual ~sensor();
 
 	virtual t_sensor_type getType()
-	{return m_iType;}
+	{return sensortype_;}
 
 	virtual char* getName()
-	{return m_cName;}
+	{return sensorname_;}
 
-	virtual bool setPin(int p)
+	virtual bool setPin(unsigned short p)
 	{
-		m_iPin = p;
-		pinMode(m_iPin, INPUT_PULLUP);
+		sensorpin_ = p;
+		pinMode(sensorpin_, INPUT_PULLUP);
 		return true;
 	}
 
-	virtual int getPin()
-	{return m_iPin;}
-
-	virtual bool getValue(int v)
+	virtual unsigned short getPin()
+	{return sensorpin_;}
+	
+	virtual bool getValue()
 	{
-		m_iValue = v;
-		return true;
+		if (sensorvalue_ >= 1)
+		{
+			return true;
+		}
+		return false;
 	}
 };
 

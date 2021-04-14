@@ -5,6 +5,7 @@
 
 // Wenn als Board das NodeMCU V3 gewählt wurde wird dies entsprechend freigeschalten.
 
+#include <Bounce2.h>
 #include "constants.h"		// Constanten müssen vor allem anderen initialisiert werden
 
 #include "logger.h"
@@ -30,7 +31,10 @@
 unsigned long zeitstempel1 = 0;
 unsigned long zeitstempel2 = 0;
 unsigned long zeitstempel3 = 0;
-
+bool flipflop1 = false;
+bool result1 = false;
+bool flipflop2 = false;
+bool result2 = false;
 //volatile boolean g_volatSignal = false;
 //volatile boolean g_volatSignalSet = false;
 //volatile boolean g_volatSignalOld = false;
@@ -97,20 +101,20 @@ void setup()
 	static const char* const name2 PROGMEM = "rgb_color";
 	rgbSwitchcontroller1.New_event(name2, 0, 1, 500, 100, false, false);
 	static const char* const name3 PROGMEM = "rgb_bright";
-	rgbSwitchcontroller1.New_event(name3, 100, 2, 100, 100, false, false);
+	rgbSwitchcontroller1.New_event(name3, 200, 2, 200, 50, false, false);
 	static const char* const name4 PROGMEM = "off";
 	rgbSwitchcontroller1.New_event(name4, 0, 1, 5000, 200, false, true);
 
 	// Events 2:
 	Serial.println(F("Setup Events for Button2"));
 	static const char* const name11 PROGMEM = "on";
-	rgbSwitchcontroller1.New_event(name11, 0, 1, 3000, 200, true, false);
+	rgbSwitchcontroller2.New_event(name11, 0, 1, 3000, 200, true, false);
 	static const char* const name22 PROGMEM = "rgb_color";
-	rgbSwitchcontroller1.New_event(name22, 0, 1, 500, 100, false, false);
+	rgbSwitchcontroller2.New_event(name22, 0, 1, 500, 100, false, false);
 	static const char* const name33 PROGMEM = "rgb_bright";
-	rgbSwitchcontroller1.New_event(name33, 100, 2, 100, 100, false, false);
+	rgbSwitchcontroller2.New_event(name33, 200, 2, 200, 50, false, false);
 	static const char* const name44 PROGMEM = "off";
-	rgbSwitchcontroller1.New_event(name44, 0, 1, 5000, 200, false, true);
+	rgbSwitchcontroller2.New_event(name44, 0, 1, 5000, 200, false, true);
 	
 #ifdef DEBUG
 	static const char* const buffer4 PROGMEM = "Setup End";
@@ -129,52 +133,87 @@ void setup()
 //*******************************************************
 void loop()
 {
+	rgbColorswitch1.update_debounce();
+	rgbColorswitch2.update_debounce();
+	
 	if (millis() - zeitstempel1 >= laufzeit_5)
 	{
-		auto result = rgbSwitchcontroller1.Event_handler(rgbColorswitch1.getValue(),millis());
-
-		//Serial.println(millis());
-		if (result && strcmp(rgbSwitchcontroller1.last_triggerede_event, "rgb_color") == 0)
+		// mach nur bei Aenderung
+		if (!flipflop1 && rgbColorswitch1.getValue())
 		{
-			Serial.println(F("->nextC"));
-			rgbLed01.nextcolor();
+			Serial.println(F("-->true1"));
+			result1 = rgbSwitchcontroller1.Event_handler(true, millis());
+			flipflop1 = true;
 		}
-		if (result && strcmp(rgbSwitchcontroller1.last_triggerede_event, "rgb_bright") == 0)
+		else if (flipflop1 && !rgbColorswitch1.getValue())
 		{
-			Serial.println(F("->nextB"));
-			rgbLed01.nextbrightness();
+			Serial.println(F("-->false1"));
+			result1 = rgbSwitchcontroller1.Event_handler(false, millis());
+			flipflop1 = false;
 		}
-		if (result && strcmp(rgbSwitchcontroller1.last_triggerede_event, "on") == 0)
+		
+		// mach nur bei Aenderung
+		if (!flipflop2 && rgbColorswitch2.getValue())
+		{
+			Serial.println(F("-->true2"));
+			result2 = rgbSwitchcontroller2.Event_handler(true, millis());
+			flipflop2 = true;
+		}
+		else if (flipflop2 && !rgbColorswitch2.getValue())
+		{
+			Serial.println(F("-->false2"));
+			result2 = rgbSwitchcontroller2.Event_handler(false, millis());
+			flipflop2 = false;
+		}
+		
+		if (result1 && strcmp(rgbSwitchcontroller1.last_triggerede_event, "on") == 0)
 		{
 			Serial.println(F("->on"));
 			rgbLed01.on(255, 255, 255, 255);
+			result1 = false;
 		}
-		if (result && strcmp(rgbSwitchcontroller1.last_triggerede_event, "off") == 0)
+		if (result1 && strcmp(rgbSwitchcontroller1.last_triggerede_event, "off") == 0)
 		{
 			Serial.println(F("->off"));
 			rgbLed01.off();
+			result1 = false;
 		}
-		auto result2 = rgbSwitchcontroller2.Event_handler(rgbColorswitch2.getValue(), millis());
-		//Serial.println(millis());
-		if (result2 && strcmp(rgbSwitchcontroller1.last_triggerede_event, "on") == 0)
+		if (result1 && strcmp(rgbSwitchcontroller1.last_triggerede_event, "rgb_color") == 0)
+		{
+			Serial.println(F("->nextC"));
+			rgbLed01.nextcolor();
+			result1 = false;
+		}
+		if (result1 && strcmp(rgbSwitchcontroller1.last_triggerede_event, "rgb_bright") == 0)
+		{
+			Serial.println(F("->nextB"));
+			rgbLed01.nextbrightness();
+			result1 = false;
+		}
+
+		if (result2 && strcmp(rgbSwitchcontroller2.last_triggerede_event, "on") == 0)
 		{
 			Serial.println(F("->on2"));
-			rgbLed01.on(255, 255, 255, 255);
+			rgbLed02.on(255, 255, 255, 255);
+			result2 = false;
 		}
-		if (result2 && strcmp(rgbSwitchcontroller1.last_triggerede_event, "off") == 0)
+		if (result2 && strcmp(rgbSwitchcontroller2.last_triggerede_event, "off") == 0)
 		{
 			Serial.println(F("->off2"));
-			rgbLed01.off();
+			rgbLed02.off();
+			result2 = false;
 		}
-		if (result2 && strcmp(rgbSwitchcontroller1.last_triggerede_event, "rgb_color") == 0)
+		if (result2 && strcmp(rgbSwitchcontroller2.last_triggerede_event, "rgb_color") == 0)
 		{
 			Serial.println(F("->nextC2"));
-			rgbLed01.nextcolor();
+			rgbLed02.nextcolor();
+			result2 = false;
 		}
-		if (result2 && strcmp(rgbSwitchcontroller1.last_triggerede_event, "rgb_bright") == 0)
+		if (result2 && strcmp(rgbSwitchcontroller2.last_triggerede_event, "rgb_bright") == 0)
 		{
 			Serial.println(F("->nextB2"));
-			rgbLed01.nextbrightness();
+			rgbLed02.nextbrightness();
+			result2 = false;
 		}
 		zeitstempel1 = millis();
 	}
